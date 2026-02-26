@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANEL X - Advanced URL Bypass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Jost', sans-serif; }
+        * { border-radius: 0 !important; }
+        .browser-header {
+            background: #1e1e2f;
+            border-bottom: 2px solid #2d2d44;
+        }
+        .browser-content {
+            background: #0a0a0f;
+            height: 500px;
+            overflow: hidden;
+            position: relative;
+        }
+        .browser-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .auto-toggle.active {
+            background: #10b981;
+        }
+        .glass-effect {
+            background: rgba(30, 30, 47, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0f] text-white min-h-screen">
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+                <span class="material-icons text-4xl text-blue-500">bolt</span>
+                <h1 class="text-4xl font-bold tracking-tighter">
+                    PANEL <span class="text-blue-500">X</span>
+                </h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 bg-[#1e1e2f] px-4 py-2">
+                    <span class="material-icons text-sm text-green-500">fiber_manual_record</span>
+                    <span class="text-sm">System Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="bg-[#1e1e2f] p-6 mb-6">
+            <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm text-gray-400 flex items-center gap-2">
+                        <span class="material-icons text-sm">link</span>
+                        Target URL
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="url" 
+                               id="targetUrl"
+                               value="https://monteolympus.com/s/joeliton-register_update"
+                               class="flex-1 bg-[#0a0a0f] border border-gray-800 px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                        <button id="startBtn" 
+                                class="bg-blue-600 hover:bg-blue-700 px-8 py-3 font-medium flex items-center gap-2 transition">
+                            <span class="material-icons">play_arrow</span>
+                            START
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Proxy Settings -->
+                <div class="flex gap-4 items-center">
+                    <div class="flex-1">
+                        <input type="text" 
+                               id="proxyInput"
+                               placeholder="Proxy (optional) - http://user:pass@ip:port"
+                               class="w-full bg-[#0a0a0f] border border-gray-800 px-4 py-2 text-sm focus:outline-none">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-400">Auto Mode</span>
+                        <button id="autoToggle" 
+                                class="auto-toggle active w-12 h-6 bg-blue-600 relative transition">
+                            <span class="absolute right-1 top-1 w-4 h-4 bg-white"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Browser Interface -->
+        <div class="bg-[#1e1e2f]">
+            <!-- Browser Header -->
+            <div class="browser-header flex items-center gap-4 px-4 py-3">
+                <div class="flex items-center gap-2">
+                    <button class="p-1 hover:bg-[#2d2d44] transition" id="backBtn">
+                        <span class="material-icons">arrow_back</span>
+                    </button>
+                    <button class="p-1 hover:bg-[#2d2d44] transition" id="forwardBtn">
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                    <button class="p-1 hover:bg-[#2d2d44] transition" id="reloadBtn">
+                        <span class="material-icons">refresh</span>
+                    </button>
+                </div>
+                <div class="flex-1 flex items-center bg-[#0a0a0f] px-3 py-1">
+                    <span class="material-icons text-sm text-gray-500 mr-2">lock</span>
+                    <span id="currentUrl" class="text-sm text-gray-300">https://monteolympus.com/...</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="p-1 hover:bg-[#2d2d44] transition" id="fullscreenBtn">
+                        <span class="material-icons">fullscreen</span>
+                    </button>
+                    <button class="p-1 hover:bg-[#2d2d44] transition" id="settingsBtn">
+                        <span class="material-icons">settings</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Browser Content -->
+            <div class="browser-content" id="browserContainer">
+                <iframe id="browserFrame" 
+                        class="browser-frame"
+                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                        src="about:blank">
+                </iframe>
+                
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" 
+                     class="absolute inset-0 bg-[#0a0a0f] bg-opacity-90 flex items-center justify-center hidden">
+                    <div class="text-center">
+                        <span class="material-icons text-4xl text-blue-500 animate-spin mb-2">refresh</span>
+                        <p class="text-sm text-gray-400">Processing Cloudflare...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="bg-[#151520] px-4 py-2 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1">
+                        <span class="material-icons text-sm text-gray-500">visibility</span>
+                        <span id="viewStatus">Viewing: Home</span>
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <span class="material-icons text-sm text-gray-500">shield</span>
+                        <span id="proxyStatus">Proxy: None</span>
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="flex items-center gap-1">
+                        <span class="material-icons text-sm text-green-500">fiber_manual_record</span>
+                        <span id="bypassStatus">Ready</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step Controls -->
+        <div class="grid grid-cols-4 gap-4 mt-6">
+            <button class="step-btn bg-[#1e1e2f] p-4 hover:bg-[#2d2d44] transition text-left group">
+                <span class="material-icons text-2xl text-blue-500 mb-2 group-hover:scale-110 transition">1</span>
+                <h3 class="font-medium">Cloudflare Detect</h3>
+                <p class="text-xs text-gray-400 mt-1">Auto-detect & bypass</p>
+            </button>
+            <button class="step-btn bg-[#1e1e2f] p-4 hover:bg-[#2d2d44] transition text-left group">
+                <span class="material-icons text-2xl text-purple-500 mb-2 group-hover:scale-110 transition">2</span>
+                <h3 class="font-medium">Human Verify</h3>
+                <p class="text-xs text-gray-400 mt-1">Simulate human click</p>
+            </button>
+            <button class="step-btn bg-[#1e1e2f] p-4 hover:bg-[#2d2d44] transition text-left group">
+                <span class="material-icons text-2xl text-green-500 mb-2 group-hover:scale-110 transition">3</span>
+                <h3 class="font-medium">Challenge Solve</h3>
+                <p class="text-xs text-gray-400 mt-1">Auto-complete CAPTCHA</p>
+            </button>
+            <button class="step-btn bg-[#1e1e2f] p-4 hover:bg-[#2d2d44] transition text-left group">
+                <span class="material-icons text-2xl text-orange-500 mb-2 group-hover:scale-110 transition">4</span>
+                <h3 class="font-medium">Final Bypass</h3>
+                <p class="text-xs text-gray-400 mt-1">Access granted</p>
+            </button>
+        </div>
+
+        <!-- Log Console -->
+        <div class="bg-[#1e1e2f] mt-6 p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium flex items-center gap-2">
+                    <span class="material-icons text-sm">terminal</span>
+                    Bypass Log
+                </h3>
+                <button class="text-xs text-gray-400 hover:text-white" id="clearLogs">
+                    Clear
+                </button>
+            </div>
+            <div id="logConsole" class="bg-[#0a0a0f] p-3 h-32 overflow-y-auto font-mono text-xs">
+                <div class="text-green-500">✅ System initialized...</div>
+                <div class="text-gray-400">⚡ Waiting for target URL...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+      </html>
